@@ -1,5 +1,7 @@
 package main;
 
+import sprites.player;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
@@ -30,7 +32,7 @@ public class Keys implements KeyListener {
         if (key == KeyEvent.VK_D || key== KeyEvent.VK_RIGHT){
             right=true;
         }if (key == KeyEvent.VK_ESCAPE){
-            System.exit(73291);
+            System.exit(67);
         }
     }
 

@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements Runnable{
         double delta =0;
         long lastTime = System.nanoTime();
         long currentTime;
-        int backgroundMult = 4;
+        int backgroundMult = 2;
         holdingArr = BM.makePersonalisedBackground(5,screenWidthMid,screenHeightMid-(2700*backgroundMult),2700*backgroundMult,2700*backgroundMult);
         BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
         holdingArr = BM.makePersonalisedBackground(4,screenWidthMid,screenHeightMid,2700*backgroundMult,2700*backgroundMult);
@@ -53,6 +53,8 @@ public class GamePanel extends JPanel implements Runnable{
         holdingArr = BM.makePersonalisedBackground(2,-1000,-1000,screenWidth,screenHeight);
         BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
         holdingArr = BM.makePersonalisedBackground(0,-200,200,5,screenHeightMid - (holdingArr[1] /2));
+        BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
+        holdingArr = BM.makePersonalisedBackground(0,0,1000,100,100);
         BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
 
 
@@ -92,7 +94,7 @@ public class GamePanel extends JPanel implements Runnable{
 
         // using the paint component I have added the coordinates in the top left of the screen with a white background behind them
         //It is here so it is always visible to the player for where they are
-        //and also how long the game has been going on dependet on speedrun mode
+        //and also how long the game has been going on depended on speedrun mode
         g2.drawImage(BM.WHITE,0,0,250,55,null);
         g2.setColor(Color.CYAN);
         g2.setFont(new Font("Ink Free", Font.BOLD, 20));

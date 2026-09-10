@@ -12,21 +12,26 @@ public class player extends entities{
     GamePanel gp;
     Keys key;
     backgroundManager BM;
+    public int everyYnth = 0, everyXnth =0;
+    public int nth = 2;
 
 
     public player(GamePanel gp,Keys key,backgroundManager BM){
         this.gp = gp;
         this.key = key;
         this.BM =BM;
-        defaultPlayer(gp.screenWidthMid-(gp.playerSize/2),gp.screenHeightMid-(gp.playerSize/2),5);
+        defaultPlayer(gp.screenWidthMid-(gp.playerSize/2),gp.screenHeightMid-(gp.playerSize/2),5,5);
         getPlayerVisuals();
     }
 
-    public void defaultPlayer(int x,int y,double Speed){
+    public void defaultPlayer(int x,int y, int maxvy, int maxvx){
         this.x =x;
         this.y =y;
-        this.Speed = Speed;
-        direction = "down";
+        this.currentxv = 0;
+        this.currentyv = 0;
+        this.maxxv = maxvx;
+        this.maxyv = maxvy;
+        direction = "up";
     }
     public void getPlayerVisuals(){
         try{
@@ -50,65 +55,125 @@ public class player extends entities{
         }
     }
     public void update(){
-        if (key.up || key.left || key.right || key.down) {
-            //improper coordinate system
-            if (key.up) {
-                direction = "up";
-                y -= Speed;
-                gp.coordsY+=Speed;
-            }
-            if (key.down) {
-                direction = "down";
-                y += Speed;
-                gp.coordsY-=Speed;
-            }
-            if (key.left) {
-                direction = "left";
-                x -= Speed;
-                gp.coordsX-=Speed;
-            }
-            if (key.right) {
-                direction = "right";
-                x += Speed;
-                gp.coordsX+=Speed;
-            }
-            //Player edge of screen check, will see if the player is at the edge of the screen, and will move the backround accordingly
-            //will have to add collision checker prior in chronologicality
-            //sticky movement
-            //overcompliacted by adding the diff twice
-            if (x < 100) {
-                int diff = 100-x;
-                x = 100;
-                BM.playerHitLeft(diff);
+        boolean xpress = false,ypress = false;
+        if (key.up || key.down || key.left || key.right) {
+            if (!(key.up && key.down)) {
+                if (key.up) {
+                    ypress = true;
+                    direction = "up";
+                    if (currentyv > (-maxyv)) {
+                        everyYnth++;
+                        if (everyYnth == nth) {
+                            currentyv--;
+                            everyYnth = 0;
+                        }
+                    }
 
-            } else if (x > (gp.screenWidth - gp.playerSize) -100) {
-                int diff = x - ((gp.screenWidth - gp.playerSize) - 100);
-                x = (gp.screenWidth - gp.playerSize) -100;
-                BM.playerHitRight(diff);
-            }
-
-            if (y < 100) {
-                int diff = 100-y;
-                y = 100;
-                BM.playerHitTop(diff);
-
-            } else if (y > (gp.screenHeight - gp.playerSize) -100) {
-                int diff = y - ((gp.screenHeight - gp.playerSize) - 100);
-                y = (gp.screenHeight - gp.playerSize) -100;
-                BM.playerHitBottom(diff);
-            }
-
-            spriteCounter++;
-            if (spriteCounter > 10) {
-                if (spriteNum < 4) {
-                    spriteNum++;
-                } else if (spriteNum == 4) {
-                    spriteNum = 1;
                 }
-                spriteCounter = 0;
+                if (key.down) {
+                    ypress = true;
+                    direction = "down";
+                    if (currentyv < maxyv) {
+                        everyYnth++;
+                        if (everyYnth == nth) {
+                            currentyv++;
+                            everyYnth = 0;
+                        }
+                    }
+
+                }
+            }
+            if (!(key.left && key.right)){
+                if (key.left) {
+                    xpress =true;
+                    direction = "left";
+                    if (currentxv > (-maxxv)){
+                        everyXnth++;
+                        if (everyXnth == nth) {
+                            currentxv--;
+                            everyXnth = 0;
+                        }
+                    }
+
+                }
+                if (key.right) {
+                    xpress = true;
+                    direction = "right";
+                    if (currentxv < maxxv) {
+                        everyXnth++;
+                        if (everyXnth == nth) {
+                            currentxv++;
+                            everyXnth = 0;
+                        }
+                    }
+
+                }
             }
         } else {
             direction = "default";
+        }
+        if((!ypress)&&Math.abs(currentyv)>0){
+            everyYnth++;
+            if (everyYnth==nth){
+                if(currentyv>0){
+                    currentyv--;
+                }else{
+                    currentyv++;
+                }
+                everyYnth=0;
+            }
+        }
+        if((!xpress)&&Math.abs(currentxv)>0){
+            everyXnth++;
+            if (everyXnth==nth){
+                if(currentxv>0){
+                    currentxv--;
+                }else{
+                    currentxv++;
+                }
+                everyXnth=0;
+            }
+        }
+
+
+        y += currentyv;
+        gp.coordsY += currentyv;
+        x += currentxv;
+        gp.coordsX += currentxv;
+        //Player edge of screen check, will see if the player is at the edge of the screen, and will move the backround accordingly
+        //will have to add collision checker prior in chronologicality
+        //sticky movement
+        //overcompliacted by adding the diff twice
+        if (x < 100) {
+            int diff = 100-x;
+            x = 100;
+            BM.playerHitLeft(diff);
+
+        } else if (x > (gp.screenWidth - gp.playerSize) -100) {
+            int diff = x - ((gp.screenWidth - gp.playerSize) - 100);
+            x = (gp.screenWidth - gp.playerSize) -100;
+            BM.playerHitRight(diff);
+        }
+
+        if (y < 100) {
+            int diff = 100-y;
+            y = 100;
+            BM.playerHitTop(diff);
+
+        } else if (y > (gp.screenHeight - gp.playerSize) -100) {
+            int diff = y - ((gp.screenHeight - gp.playerSize) - 100);
+            y = (gp.screenHeight - gp.playerSize) -100;
+            BM.playerHitBottom(diff);
+        }
+
+        spriteCounter++;
+        if (spriteCounter > 10) {
+            if (spriteNum < 4) {
+                spriteNum++;
+            } else if (spriteNum == 4) {
+                spriteNum = 1;
+            }
+            spriteCounter = 0;
         }
     }
     public void paintComponent(Graphics g2){
