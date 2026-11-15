@@ -8,13 +8,17 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class player extends entities{
+public class player extends playerElements{
     GamePanel gp;
     Keys key;
     backgroundManager BM;
     public int everyYnth = 0, everyXnth =0;
-    public int nth = 2;
-
+    public int nth = 5;
+    /*
+    public double sinWave = 0;
+    public int bobMultiplyer =6;
+    public double bobTimePeriod =10;
+     */
 
     public player(GamePanel gp,Keys key,backgroundManager BM){
         this.gp = gp;
@@ -27,12 +31,16 @@ public class player extends entities{
     public void defaultPlayer(int x,int y, int maxvy, int maxvx){
         this.x =x;
         this.y =y;
+        this.width =gp.playerWidth;
+        this.height =gp.playerHeight;
         this.currentxv = 0;
         this.currentyv = 0;
         this.maxxv = maxvx;
         this.maxyv = maxvy;
         direction = "up";
     }
+
+
     public void getPlayerVisuals(){
         try{
             up1 = ImageIO.read(getClass().getResourceAsStream("/player/up_1.png"));
@@ -137,7 +145,7 @@ public class player extends entities{
 
 
         y += currentyv;
-        gp.coordsY += currentyv;
+        gp.coordsY -= currentyv;
         x += currentxv;
         gp.coordsX += currentxv;
         //Player edge of screen check, will see if the player is at the edge of the screen, and will move the backround accordingly
@@ -224,7 +232,21 @@ public class player extends entities{
             case "default":
                 img =dft;
                 break;
+
         }
-        g2.drawImage(img,x,y,gp.playerSize,gp.playerSize,null);
+        if (currentxv==0 && currentyv==0) {
+            img = dft;
+        }/*
+        int drawnx = x, drawny=y, drawnHeight=gp.playerHeight, drawnWidth = gp.playerWidth;
+        sinWave += ((2*Math.PI)/(bobTimePeriod*gp.FPS));
+        if (sinWave > (2*Math.PI)){
+            sinWave = 0;
+        }
+        double adjuster = Math.round(bobMultiplyer * Math.sin(sinWave));
+        //the point at the center bottom of the player should not move at yofCB = y+Height and xofCB = x+ (Width)/2
+        drawny +=  adjuster;
+        drawnHeight -=adjuster;
+        */
+        g2.drawImage(img,x,y,width,height,null);
     }
 }

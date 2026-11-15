@@ -7,6 +7,9 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable{
     public int playerSize =  86;
+    public int playerHeight =  86;
+    public int playerWidth =  86;
+    public int frameCounter = 0;
     public int screenWidth = 896;
     public int screenWidthMid = screenWidth /2;
     public int screenHeight = 672;
@@ -64,6 +67,10 @@ public class GamePanel extends JPanel implements Runnable{
             delta += (currentTime - lastTime) / drawTimeChange;
             lastTime = currentTime;
             if(delta >= 1){
+                frameCounter ++;
+                if (frameCounter == FPS){
+                    frameCounter =0;
+                }
                 update();
                 repaint();
                 delta --;
