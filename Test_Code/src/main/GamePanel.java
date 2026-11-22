@@ -1,30 +1,37 @@
 package main;
 
 import Backrounds.backgroundManager;
+import Collisions.Collisions;
+import sprites.BaseEntity;
+import sprites.EntityManager;
+import sprites.Images;
+import sprites.ImageEntity;
 import sprites.player;
 import java.awt.*;
+import java.io.IOException;
 import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements Runnable{
-    public int playerSize =  86;
-    public int playerHeight =  86;
-    public int playerWidth =  86;
+    public int playerSize = 86;
+    public int playerHeight = 86;
+    public int playerWidth = 86;
     public int frameCounter = 0;
     public int screenWidth = 896;
     public int screenWidthMid = screenWidth /2;
     public int screenHeight = 672;
     public int screenHeightMid = screenHeight /2;
-    int[] holdingArr= new int[6];
     Keys keyused = new Keys();
     Thread gameTime;
-    backgroundManager BM = new backgroundManager(this);
-    public int coordsX, coordsY = 0;
+    EntityManager EM = new EntityManager(this);
+    public double coordsX, coordsY = 0;
     double START_TIME = System.nanoTime();
+    Images imageDealer = new Images();
+    backgroundManager BM = new backgroundManager(this,EM,imageDealer);
 
 
     public int FPS =60;
-    player you= new player(this,keyused, BM);
-
+    Collisions C = new Collisions(this);
+    player you= new player(this,keyused, BM,EM,C);
 
     public GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -46,20 +53,8 @@ public class GamePanel extends JPanel implements Runnable{
         double delta =0;
         long lastTime = System.nanoTime();
         long currentTime;
-        int backgroundMult = 2;
-        holdingArr = BM.makePersonalisedBackground(5,screenWidthMid,screenHeightMid-(2700*backgroundMult),2700*backgroundMult,2700*backgroundMult);
-        BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
-        holdingArr = BM.makePersonalisedBackground(4,screenWidthMid,screenHeightMid,2700*backgroundMult,2700*backgroundMult);
-        BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
-        holdingArr = BM.makePersonalisedBackground(2,0,0,screenWidth,300);
-        BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
-        holdingArr = BM.makePersonalisedBackground(2,-1000,-1000,screenWidth,screenHeight);
-        BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
-        holdingArr = BM.makePersonalisedBackground(0,-200,200,5,screenHeightMid - (holdingArr[1] /2));
-        BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
-        holdingArr = BM.makePersonalisedBackground(0,0,1000,100,100);
-        BM.currentPointer = BM.setCurrentBackgrounds(true,holdingArr);
-
+        //int backgroundMult = 2;
+        EM.initialEntitySetup();
 
 
         while(gameTime != null){
@@ -78,36 +73,34 @@ public class GamePanel extends JPanel implements Runnable{
         }
     }
     public void update(){
-        //ensure the getscreenWidth etc are still relevant
+        //ensure the getscreen Width etc are still relevant
         screenWidth = this.getWidth();
         screenHeight = this.getHeight();
-        screenWidthMid = screenWidthMid/2;
-        screenHeightMid = screenHeightMid/2;
-        you.update();
+        screenWidthMid = screenWidth/2;
+        screenHeightMid = screenHeight/2;
+        you.update();//run all the updates to the player and the movement of the player affecting points of where the entities are
     }
     public void paintComponent(Graphics g){
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D)g;
-        // paint the background
-        for(int i=0;i<BM.currentPointer;i++){
-            BM.draw(g2,BM.current[i]);
+        // paint the entities
+        for (ImageEntity entity:EM.allImageEntities) {
+            BM.draw(g2, entity);
         }
 
-        //paint the entities incl the player
+        //paint the player
         you.paintComponent(g2);
 
-        //paint effects on screen above the entities and behind the outer info
-
-        // using the paint component I have added the coordinates in the top left of the screen with a white background behind them
+        // using the paint component I have added the coordinates in the top left of the screen with a white background behind them,
         //It is here so it is always visible to the player for where they are
         //and also how long the game has been going on depended on speedrun mode
-        g2.drawImage(BM.WHITE,0,0,250,55,null);
+        g2.drawImage(imageDealer.getImageByIndex(6),0,0,250,55,null);
         g2.setColor(Color.CYAN);
         g2.setFont(new Font("Ink Free", Font.BOLD, 20));
-        g2.drawString("COORDS: ("+coordsX/25+" , "+coordsY/25+")",15,30);
+        g2.drawString("COORDS: ("+(int)(coordsX/25)+" , "+(int)(coordsY/25)+")",15,30);
 
-        g2.drawImage(BM.WHITE,screenWidth-250,0,250,55,null);
+        g2.drawImage(imageDealer.getImageByIndex(6),screenWidth-250,0,250,55,null);
         g2.setColor(Color.CYAN);
         g2.setFont(new Font("Ink Free", Font.BOLD, 20));
         long displayTime = (long) ((System.nanoTime() - START_TIME)/10000000);
@@ -120,5 +113,6 @@ public class GamePanel extends JPanel implements Runnable{
         }
         g2.drawString("TIME: "+minutes+" : "+seconds+" : "+hundreths,screenWidth -200,30);
         g2.dispose();
+        System.out.println(EM.allEntities.getFirst().getX());
     }
 }

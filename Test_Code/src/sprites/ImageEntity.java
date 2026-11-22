@@ -3,13 +3,16 @@ package sprites;
 public class ImageEntity extends BaseEntity{
     double imageX, imageY;
     int imageWidth, imageHeight, imageIndex;
-    public ImageEntity(double xPosition, double yPosition, double Proximity, int imageIndex, double imageXPosition , double imageYPosition, int imageWidth, int imageHeight){
-        super(xPosition, yPosition, Proximity);
+    EntityManager EM;
+    public ImageEntity(EntityManager EM,double xPosition, double yPosition, double Proximity, int imageIndex, double imageXPosition , double imageYPosition, int imageWidth, int imageHeight){
+        super(EM ,xPosition, yPosition, Proximity);
         imageX = imageXPosition;
         imageY = imageYPosition;
         this.imageIndex = imageIndex;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
+        this.EM = EM;
+        EM.addTooImageEntities(this);
     }
     public double getImageX(){
         return imageX;

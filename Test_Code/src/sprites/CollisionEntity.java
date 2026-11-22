@@ -3,12 +3,15 @@ package sprites;
 public class CollisionEntity extends ImageEntity{
     double collisionX, collisionY;
     int collisionWidth, collisionHeight;
-    public CollisionEntity(double xPosition, double yPosition, double Proximity, int imageIndex, double imageXPosition, double imageYPosition, int imageWidth, int imageHeight, double collisionX, double collisionY, int collisionHeight, int collisionWidth) {
-        super(xPosition, yPosition, Proximity, imageIndex, imageXPosition, imageYPosition, imageWidth, imageHeight);
+    EntityManager EM;
+    public CollisionEntity(EntityManager EM,double xPosition, double yPosition, double Proximity, int imageIndex, double imageXPosition, double imageYPosition, int imageWidth, int imageHeight, double collisionX, double collisionY, int collisionHeight, int collisionWidth) {
+        super(EM ,xPosition, yPosition, Proximity, imageIndex, imageXPosition, imageYPosition, imageWidth, imageHeight);
         this.collisionX = collisionX;
         this.collisionY = collisionY;
         this.collisionWidth = collisionWidth;
         this.collisionHeight = collisionHeight;
+        this.EM = EM;
+        EM.addTooCollisionEntities(this);
     }
     public double getCollisionX(){
         return collisionX;

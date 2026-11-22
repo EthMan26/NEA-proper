@@ -2,10 +2,13 @@ package sprites;
 
 public class BaseEntity {
     double x,y,proximity;
-    public BaseEntity(double xPosition, double yPosition, double Proximity) {
+    EntityManager EM;
+    public BaseEntity(EntityManager EM,double xPosition, double yPosition, double Proximity) {
         x = xPosition;
         y = yPosition;
-        this.proximity = proximity;
+        this.EM = EM;
+        this.proximity = Proximity;
+        EM.addTooBaseEntities(this);
     }
     public double getX(){
         return x;
@@ -14,7 +17,7 @@ public class BaseEntity {
         return y;
     }
     public double getProximity(){
-        return y;
+        return proximity;
     }
     public void offsetAllX(double val){
         x += val;

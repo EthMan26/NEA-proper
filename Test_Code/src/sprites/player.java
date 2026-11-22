@@ -1,4 +1,5 @@
 package sprites;
+import Collisions.Collisions;
 import main.GamePanel;
 import main.Keys;
 import Backrounds.backgroundManager;
@@ -8,31 +9,46 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class player extends playerElements{
+public class player{
     GamePanel gp;
     Keys key;
     backgroundManager BM;
+    EntityManager EM;
+    Collisions C;
+    public double x,y,width,height,xC,yC,wC,hC;
+    public double maxyv,maxxv,currentyv,currentxv;
+    public BufferedImage up1,up2,up3,up4,left1,left2,left3,left4,right1,right2,right3,right4,down1,down2,dft;
+    public String direction;
+    public int spriteCounter=0;
+    public int spriteNum=1;
     public int everyYnth = 0, everyXnth =0;
-    public int nth = 5;
+    public int nth = 7;
     /*
     public double sinWave = 0;
     public int bobMultiplyer =6;
     public double bobTimePeriod =10;
      */
 
-    public player(GamePanel gp,Keys key,backgroundManager BM){
+    public player(GamePanel gp,Keys key,backgroundManager BM, EntityManager EM, Collisions C){
         this.gp = gp;
         this.key = key;
         this.BM =BM;
-        defaultPlayer(gp.screenWidthMid-(gp.playerSize/2),gp.screenHeightMid-(gp.playerSize/2),5,5);
+        this.EM = EM;
+        this.C = C;
+        double maxv = 5;
+        defaultPlayer(gp.screenWidthMid-(gp.playerSize/2),gp.screenHeightMid-(gp.playerSize/2),maxv,maxv);
         getPlayerVisuals();
     }
 
-    public void defaultPlayer(int x,int y, int maxvy, int maxvx){
+    public void defaultPlayer(double x,double y, double maxvy, double maxvx){
         this.x =x;
         this.y =y;
         this.width =gp.playerWidth;
         this.height =gp.playerHeight;
+        this.xC=x;
+        this.yC =y + (0.8*gp.playerHeight);
+        this.wC =gp.playerWidth;
+        this.hC =height +(0.2*gp.playerHeight);
         this.currentxv = 0;
         this.currentyv = 0;
         this.maxxv = maxvx;
@@ -144,35 +160,56 @@ public class player extends playerElements{
         }
 
 
-        y += currentyv;
+        //y += currentyv;
         gp.coordsY -= currentyv;
-        x += currentxv;
+        //x += currentxv;
         gp.coordsX += currentxv;
-        //Player edge of screen check, will see if the player is at the edge of the screen, and will move the backround accordingly
+        double xdiff = gp.screenWidthMid-(0.5*width);
+        BM.playerHitLeft((xdiff-x)/2);
+        double ydiff = gp.screenHeightMid-(0.5*height);
+        BM.playerHitTop((ydiff-y)/2);
+        x = gp.screenWidthMid-(0.5*width);
+        y = gp.screenHeightMid-(0.5*height);
+        if(currentxv>0){
+            BM.playerHitLeft(-currentxv);
+        }
+        if(currentxv<0){
+            BM.playerHitRight(currentxv);
+        }
+        if(currentyv>0){
+            BM.playerHitTop(-currentyv);
+        }
+        if(currentyv<0){
+            BM.playerHitBottom(currentyv);
+        }
+        //Player edge of screen check, will see if the player is at the edge of the screen, and will move the background accordingly
         //will have to add collision checker prior in chronologicality
-        //sticky movement
+        //sticky movementaaa
         //overcompliacted by adding the diff twice
-        if (x < 100) {
-            int diff = 100-x;
-            x = 100;
-            BM.playerHitLeft(diff);
+        //
+        //if (x < buffer) {
+        //    double diff = buffer-x;
+        //    x = buffer;
+        //    BM.playerHitLeft(diff);
+        //
+        //} else if (x > (gp.screenWidth - gp.playerSize) -buffer) {
+        //    double diff = x - ((gp.screenWidth - gp.playerSize) - buffer);
+        //    x = (gp.screenWidth - gp.playerSize) -buffer;
+        //    BM.playerHitRight(diff);
+        //}
+        //
+        //if (y < buffer) {
+        //    double diff =buffer-y;
+        //    y = buffer;
+        //    BM.playerHitTop(diff);
+        //
+        //} else if (y > (gp.screenHeight - gp.playerSize) -buffer) {
+        //    double diff = y - ((gp.screenHeight - gp.playerSize) - buffer);
+        //    y = (gp.screenHeight - gp.playerSize) -buffer;
+        //    BM.playerHitBottom(diff);
+            //}
+        //
 
-        } else if (x > (gp.screenWidth - gp.playerSize) -100) {
-            int diff = x - ((gp.screenWidth - gp.playerSize) - 100);
-            x = (gp.screenWidth - gp.playerSize) -100;
-            BM.playerHitRight(diff);
-        }
-
-        if (y < 100) {
-            int diff = 100-y;
-            y = 100;
-            BM.playerHitTop(diff);
-
-        } else if (y > (gp.screenHeight - gp.playerSize) -100) {
-            int diff = y - ((gp.screenHeight - gp.playerSize) - 100);
-            y = (gp.screenHeight - gp.playerSize) -100;
-            BM.playerHitBottom(diff);
-        }
 
         spriteCounter++;
         if (spriteCounter > 10) {
@@ -183,6 +220,7 @@ public class player extends playerElements{
             }
             spriteCounter = 0;
         }
+        C.playerCollisions(EM.allCollisionEntities,this);
     }
     public void paintComponent(Graphics g2){
 
@@ -247,6 +285,6 @@ public class player extends playerElements{
         drawny +=  adjuster;
         drawnHeight -=adjuster;
         */
-        g2.drawImage(img,x,y,width,height,null);
+        g2.drawImage(img,(int)x,(int)y,(int)width,(int)height,null);
     }
 }
